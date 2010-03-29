@@ -1,0 +1,4 @@
+using http://github.com/joshthecoder/tweepy
+grabbing new twitpics from twitter.com apistream and downloading them to directory test/
+
+v0.00001 quite buggy and beta :(
