@@ -26,20 +26,23 @@ class AppURLopener(urllib.FancyURLopener):
 class StreamWatcherListener(tweepy.StreamListener):
     print 'Catching the fish'    
     status_wrapper = TextWrapper(width=60, initial_indent='    ', subsequent_indent='    ')
-    def on_status(self, status):      
-        downloader = Downloader()
-        out_folder = 'test/'
-        
-        mystring = self.status_wrapper.fill(status.text)
-        myString = status.text
-        myUrl = re.search("(?P<url>https?://[^\s]+)", myString).group("url")
-        
-        print '############ sleep 2 secs' 
-        time.sleep(2)
-        print '#WorkerStart'
-        downloader.downloadWorker(myUrl,out_folder) 
-        print '#WorkerDone'
-        print '############'
+    def on_status(self, status):   
+		try:   
+			downloader = Downloader()
+			out_folder = 'test/'
+			
+			mystring = self.status_wrapper.fill(status.text)
+			myString = status.text
+			myUrl = re.search("(?P<url>https?://[^\s]+)", myString).group("url")
+			
+			print '############ sleep 2 secs' 
+			#time.sleep(2)
+			print '#WorkerStart'
+			downloader.downloadWorker(myUrl,out_folder) 
+			print '#WorkerDone'
+			print '############'
+		except Exception ,e:
+			print e
                  
     def on_error(self, status_code):
         print 'An error has occured! Status code = %s' % status_code
