@@ -9,6 +9,7 @@ from BeautifulSoup import BeautifulSoup as bs
 import urllib
 from random import choice
 import os
+import Image
 
 user_agents = [
     'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11',
@@ -19,6 +20,9 @@ user_agents = [
     'Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.2.9'
 ]
 
+
+counter = 1
+
 class AppURLopener(urllib.FancyURLopener):
     version =  choice(user_agents)
  
@@ -26,23 +30,26 @@ class AppURLopener(urllib.FancyURLopener):
 class StreamWatcherListener(tweepy.StreamListener):
     print 'Catching the fish'    
     status_wrapper = TextWrapper(width=60, initial_indent='    ', subsequent_indent='    ')
-    def on_status(self, status):   
-		try:   
-			downloader = Downloader()
-			out_folder = 'test/'
-			
-			mystring = self.status_wrapper.fill(status.text)
-			myString = status.text
-			myUrl = re.search("(?P<url>https?://[^\s]+)", myString).group("url")
-			
-			print '############ sleep 2 secs' 
-			#time.sleep(2)
-			print '#WorkerStart'
-			downloader.downloadWorker(myUrl,out_folder) 
-			print '#WorkerDone'
-			print '############'
-		except Exception ,e:
-			print e
+    def on_status(self, status): 
+        global counter  
+        try:   
+            downloader = Downloader()
+            out_folder = 'test/'
+            
+            mystring = self.status_wrapper.fill(status.text)
+            myString = status.text
+            myUrl = re.search("(?P<url>https?://[^\s]+)", myString).group("url")
+            
+            print '############ NR %d'% (counter,)
+            #time.sleep(2)
+            print '#WorkerStart'
+            
+            downloader.downloadWorker(myUrl,out_folder) 
+            print '#WorkerDone Nr %d' % (counter,)
+            print '############'
+            counter +=1
+        except Exception ,e:
+            print e
                  
     def on_error(self, status_code):
         print 'An error has occured! Status code = %s' % status_code
@@ -61,19 +68,24 @@ class Downloader:
             filename = image["src"].split("/")[-1]
             outpath = os.path.join(out_folder, filename)
             urllib.urlretrieve(image["src"], outpath)   
+            path = 'test'+image["src"]
+             
+                    
 
 def main():
     # Prompt for login credentials and setup stream object
     username = raw_input('Twitter username: ')
     password = getpass('Twitter password: ')
-    
-    stream = tweepy.Stream(username, password, StreamWatcherListener(), timeout=None)
-    track_list ='twitpic'
+        
+    stream = tweepy.Stream(username, password, StreamWatcherListener(), timeout=None)    
 
-        #track_list = raw_input('Keywords to track (comma seperated): ').strip()
+    #track_list = raw_input('Keywords to track (comma seperated): ').strip()
+    track_list ='twitpic'    
+    
 
     if track_list:
         track_list = [k for k in track_list.split(',')]
+        print track_list
     else:
         track_list = None
 
